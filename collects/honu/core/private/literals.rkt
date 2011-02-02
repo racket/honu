@@ -1,6 +1,7 @@
-#lang scheme
+#lang racket
 
 (provide (all-defined-out))
+(require syntax/parse)
 
 ;; macro for defining literal tokens that can be used in macros
 (define-syntax-rule (define-literal name ...)
@@ -16,5 +17,12 @@
                 honu-= honu-+= honu--= honu-*= honu-/= honu-%=
                 honu-&= honu-^= honu-\|= honu-<<= honu->>= honu->>>=
                 honu->> honu-<< honu->>> honu-< honu-> honu-<= honu->=
-                honu-? honu-: honu-comma)
+                honu-!= honu-==
+                honu-literal
+                honu-? honu-: honu-comma honu-. #%braces #%brackets #%parens colon
+                honu-and
+                ellipses-comma ellipses-comma* ellipses-repeat
+                honu-for-syntax
+                honu-for-template)
 
+(define-literal-set cruft (#%parens #%brackets #%braces semicolon))
