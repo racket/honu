@@ -34,7 +34,7 @@
                                          (:~ #\")))
 (define-lex-abbrev string (:: #\" (:* string-character) #\"))
 (define-lex-abbrev operator (:or "+" "=" "*" "/" "-" "^" "||" "|" "&&" "<="
-                                 ">=" "<-" "<" ">" "!" "::"))
+                                 ">=" "<-" "<" ">" "!" "::" ":="))
 (define-lex-abbrev block-comment (:: "/*"
                                      (complement (:: any-string "*/" any-string))
                                      "*/"))
@@ -42,7 +42,7 @@
 (define-lex-abbrev line-comment (:: (:or "#" "//")
                                     (:* (:~ "\n"))
                                     ;; we might hit eof before a \n
-                                    (:? "\n")))
+                                    (:? "\n" "\r")))
 
 (define (replace-escapes string)
   (define replacements '([#px"\\\\n" "\n"]
@@ -60,7 +60,7 @@
     #;
     [line-comment (token-whitespace)]
     [(:or "#" "//") (token-end-of-line-comment)]
-    ["\n" (token-whitespace)]
+    [(:? "\n" "\r") (token-whitespace)]
     [number (token-number (string->number lexeme))]
     #;
     [block-comment (token-whitespace)]
@@ -70,11 +70,7 @@
     [":" (token-identifier ':)]
     ["'" (token-identifier 'quote)]
     ["`" (token-identifier 'quasiquote)]
-    ;; ["=" (token-identifier '=)]
     [operator (token-identifier (string->symbol lexeme))]
-    ;; ["*" (token-identifier '*)]
-    ;; ["/" (token-identifier '/)]
-    ;; ["+" (token-identifier '+)]
     [";" (token-identifier '|;|)]
     ;; strip the quotes from the resulting string
     ;; TODO: find a more optimal way
