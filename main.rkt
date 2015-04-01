@@ -1,6 +1,7 @@
 #lang honu/private
 
-(require (prefix-in racket: (combine-in racket/base racket/list racket/file)))
+(require (prefix-in racket: (combine-in racket/base racket/list racket/file))
+         (for-syntax (only-in racket/base #%app)))
 
 ;; require's and provide's a module
 (define-syntax-rule (provide-module module ...)
@@ -33,6 +34,8 @@
          hash
          regexp
          error
+         #%app
+         (racket:for-syntax (racket:all-from-out racket/base))
          (racket:rename-out
            [honu-cond cond]
            [honu-time time]
