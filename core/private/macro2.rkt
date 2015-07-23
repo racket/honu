@@ -33,8 +33,6 @@
          (for-meta 0 "template.rkt" syntax/stx)
 
          (for-meta -1 "literals.rkt" "compile.rkt" "parse2.rkt" "parse-helper.rkt")
-         #;
-         (for-syntax "honu-typed-scheme.rkt")
          syntax/parse)
 
 (module analysis racket/base
@@ -111,13 +109,6 @@
                                  (pattern-variable-original variable)
                                  (add1 (pattern-variable-depth variable))
                                  (pattern-variable-class variable))))
-    #;
-    (define (wrap-ellipses stuff)
-      (for/set ([name+result stuff])
-               (syntax-case name+result ()
-                 [(name result)
-                  #'((name (... ...))
-                     (result (... ...)))])))
     (define (find the-pattern)
       (debug 2 "Find in ~a\n" (syntax->datum the-pattern))
       (define-splicing-syntax-class maybe
@@ -184,8 +175,6 @@
                             (name original depth class))
       (debug 2 "Bind attributes ~a ~a\n" variable.name attribute.name)
       (with-syntax ([bind-attribute
-                      #;
-                      (create name (syntax-e name) name)
                       (pattern-variable->syntax
                         (pattern-variable (format-id variable.name "~a_~a"
                                                      (syntax-e variable.name)
@@ -194,8 +183,6 @@
                                           attribute.depth
                                           attribute.class))]
                     [new-attribute 
-                      #;
-                      (create new-name new-name name)
                       (pattern-variable->syntax
                         (pattern-variable
                           (format-id new-name "~a_~a"
@@ -232,9 +219,7 @@
     (syntax-parse stx
       [(_ stuff ...)
        (emit-remark "Parse stuff ~a\n" #'(stuff ...))
-       (phase2:parse-all #'(stuff ...))
-       #;
-       (honu->racket (parse-all #'(stuff ...)))])))
+       (phase2:parse-all #'(stuff ...))])))
 
 (begin-for-syntax
   (define-syntax (create-honu-macro stx)
@@ -316,27 +301,6 @@
                #'rest
                #t)])))
 
-#|
-;; FIXME: we shouldn't need this definition here
-(define-syntax (as-honu-syntax stx)
-  (syntax-parse stx
-    [(_ form)
-     (define compressed (compress-dollars #'form))
-     (with-syntax ([stuff* (datum->syntax #'form (syntax->list compressed)
-                                          #'form #'form)])
-       (syntax #'stuff*))]))
-
-(begin-for-syntax
-  (define-syntax (as-honu-syntax stx)
-    (syntax-parse stx
-      [(_ form)
-       (define compressed (phase1:compress-dollars #'form))
-       (with-syntax ([stuff* (datum->syntax #'form (syntax->list compressed)
-                                            #'form #'form)])
-         (syntax #'stuff*))])))
-|#
-
-
 ;; combine syntax objects
 ;; #'(a b) + #'(c d) = #'(a b c d)
 (provide mergeSyntax)
@@ -344,15 +308,7 @@
   (debug "Merge syntax ~a with ~a\n" (syntax->datum syntax1) (syntax->datum syntax2))
   (with-syntax ([(syntax1* ...) syntax1]
                 [(syntax2* ...) syntax2])
-          #'(syntax1* ... syntax2* ...))
-  #;
-  (syntax-parse syntax1
-    [(r1 (unexpand something1))
-     (syntax-parse syntax2
-       [(r2 (unexpand2 something2))
-        (with-syntax ([(syntax1* ...) #'something1]
-                      [(syntax2* ...) #'something2])
-          #'(%racket (unexpand (syntax1* ... syntax2* ...))))])]))
+          #'(syntax1* ... syntax2* ...)))
 
 (begin-for-syntax
   (define-for-syntax (pretty-syntax stx) (pretty-format (syntax->datum stx))))
@@ -414,13 +370,8 @@
         (for/list ([pattern (syntax->list #'(pattern-stx ...))]
                    [out (syntax->list #'(out-stx ...))])
           (make-syntax-class-pattern pattern out)))
-
-      #;
-      (debug "With bindings ~a\n" withs)
       (with-syntax ([(literal ...) #'literals]
                     [(new-pattern ...) pattern-stuff])
-        #;
-        (debug "Result with ~a\n" (syntax->datum #'(quote-syntax (result-with ...))))
         (define output
           #'(quote-syntax
               (begin
@@ -431,12 +382,6 @@
                       #:literal-sets ([cruft #:at name]
                                       [local-literals #:at name])
                       new-pattern ...
-
-                      #;
-                      [pattern x #:when (begin
-                                          (debug "All patterns failed for ~a\n" 'name)
-                                          #f)]
-
                       )))))
         (debug "Output is ~a\n" (pretty-syntax output))
         output)])))

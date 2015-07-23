@@ -8,8 +8,6 @@
 (define-values (prop:fixture prop:fixture? prop:fixture-ref)
                (make-struct-type-property 'fixture))
 
-#;
-(provide honu-operator?)
 (define-values (struct:fixture -make-fixture fixture? -fixture-ref fixture-set!)
                (make-struct-type 'fixture #f 1 0 #f 
                                  (list (list prop:fixture #t))

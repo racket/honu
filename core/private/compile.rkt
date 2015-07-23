@@ -11,7 +11,6 @@
 
 (provide (all-defined-out))
 
-; (define parsed-property (gensym 'honu-parsed))
 (define parsed-property 'honu-parsed)
 
 (define (parsed-syntax syntax)

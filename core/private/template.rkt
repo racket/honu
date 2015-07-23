@@ -57,13 +57,8 @@
     [(_ expr)
      (begin
        (debug "Expand honu syntax at phase ~a\n" (syntax-local-phase-level))
-       #;
-       (debug " Is ~a expanded ~a\n" (syntax->datum #'expr) (syntax->datum #'#'expr))
        (emit-remark (format "Unexpand honu syntax at phase ~a" (syntax-local-phase-level))
                     #'expr)
-       #;
-       (syntax-case #'expr ()
-         [(_ what) (debug "Properties on ~a are ~a\n" #'what (syntax-property-symbol-keys #'what))])
        (define removed (remove-repeats #'expr))
        (emit-local-step #'expr removed #:id #'unexpand-honu-syntax)
        (debug "Cleansed ~a\n" (syntax->datum removed))

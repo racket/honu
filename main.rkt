@@ -13,10 +13,7 @@
 
 (provide-module "core/main.rkt"
                 "private/common.rkt"
-                "private/common.honu"
-                ;;"private/struct.honu"
-                ;;"private/function.honu"
-                )
+                "private/common.honu")
 
 (racket:provide sqr sqrt sin max min
          number? symbol?

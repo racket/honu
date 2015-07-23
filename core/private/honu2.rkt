@@ -211,55 +211,6 @@
                        (lambda (expression)
                          (with-syntax ([expression expression])
                            (racket-syntax (dot-assign left right expression))))))))
-#;
-(define-honu-fixture honu-dot
-  (lambda (left rest)
-
-    ;; v.x = 5
-    (define-syntax-class assign #:literal-sets (cruft)
-                                #:literals (honu-equal)
-      [pattern (_ name:identifier honu-equal argument:honu-expression . more)
-               #:with result (with-syntax ([left left])
-                               (racket-syntax 
-                                   (let ([left* left])
-                                     (cond
-                                       [(honu-struct? left*)
-                                        (honu-struct-set! left* 'name argument.result)]
-                                       [(object? left*) (error 'set "implement set for objects")]))))
-               #:with rest #'more])
-
-    ;; v.x
-    (define-syntax-class plain #:literal-sets (cruft)
-                               #:literals (honu-equal)
-      [pattern (_ name:identifier . more)
-       #:with result (with-syntax ([left left])
-                       (racket-syntax 
-                           (let ([left* left])
-                             (cond
-                               [(honu-struct? left*) (let ([use (honu-struct-get left*)])
-                                                       (use left* 'name))]
-                               [(object? left*) (get-field name left*)]
-                               ;; possibly handle other types of data
-                               [else (error 'dot "don't know how to deal with ~a (~a)" 'left left*)]))))
-       #:with rest #'more])
-
-    (syntax-parse rest
-      [stuff:assign (values #'stuff.result #'stuff.rest)]
-      [stuff:plain (values #'stuff.result #'stuff.rest)])))
-#;
-(define-honu-operator/syntax honu-dot 10000 'left
-  (lambda (left right)
-    (debug "dot left ~a right ~a\n" left right)
-    (with-syntax ([left left]
-                  [right right])
-      (racket-syntax 
-          (let ([left* left])
-            (cond
-              [(honu-struct? left*) (let ([use (honu-struct-get left*)])
-                                      (use left* 'right))]
-              [(object? left*) (get-field right left*)]
-              ;; possibly handle other types of data
-              [else (error 'dot "don't know how to deal with ~a (~a)" 'left left*)]))))))
 
 (provide honu-for-syntax)
 (define-literal honu-for-syntax) 
@@ -309,7 +260,6 @@
                                                                  (regexp-replace* #rx"->" name "_to_")
                                                                  "_"))
                                               (combine-in form1.result form.result ...))))
-
          #'rest
          #f)])))
 

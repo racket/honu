@@ -2,9 +2,6 @@
 
 (require (for-syntax racket/base))
 
-#;
-(provide (all-defined-out))
-
 (provide honu-transformer? make-honu-transformer)
 
 (define-values (prop:honu-transformer honu-transformer? honu-transformer-ref)
@@ -30,9 +27,6 @@
 
 (define-values (prop:honu-operator prop:honu-operator? prop:honu-operator-ref)
                (make-struct-type-property 'honu-operator))
-
-#;
-(provide honu-operator?)
 
 (define operator-fields '(precedence assocation binary unary postfix?))
 
