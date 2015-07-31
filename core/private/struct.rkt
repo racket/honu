@@ -7,8 +7,7 @@
                      "literals.rkt"
                      "compile.rkt"
                      syntax/parse
-                     racket/syntax
-                     unstable/syntax))
+                     racket/syntax))
 
 (provide honu-struct honu-struct? honu-struct-get)
 (define-values (honu-struct honu-struct? honu-struct-get)
