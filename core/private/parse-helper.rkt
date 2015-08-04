@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require (for-syntax racket/base
-                     "parse2.rkt"))
+                     "parse.rkt"))
 
 (provide (all-defined-out))
 

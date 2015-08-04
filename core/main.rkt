@@ -6,15 +6,15 @@
                        racket/base
                        racket/class
                        (prefix-in list: racket/list)
-                       "private/macro2.rkt"
+                       "private/macro.rkt"
                        "private/class.rkt"
                        "private/operator.rkt"
                        "private/syntax.rkt"
                        (prefix-in literal: "private/literals.rkt")
                        (prefix-in syntax-parse: syntax/parse)
                        (prefix-in racket: racket/base)
-                       (prefix-in parse: "private/parse2.rkt")
-                       "private/honu2.rkt"))
+                       (prefix-in parse: "private/parse.rkt")
+                       "private/honu.rkt"))
     (provide (for-meta meta-level 
                        (rename-out [parse:honu-expression expression]
                                    [parse:honu-expression-list expression_list]

@@ -7,7 +7,7 @@
          racket/match
          (for-syntax racket/base
                      honu/core/private/literals
-                     honu/core/private/parse2
+                     honu/core/private/parse
                      honu/core/private/compile
                      syntax/parse))
 

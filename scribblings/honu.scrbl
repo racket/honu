@@ -214,7 +214,7 @@ related to the current context but for now is not used.
 
 Macro's should use @racket[syntax-parse] to pattern match on their input
 although this is not strictly necessary. Honu provides the syntax class
-@racket[honu-expression] from @racket[honu/core/parse2] that will re-invoke the
+@racket[honu-expression] from @racket[honu/core/parse] that will re-invoke the
 honu parser and return a single expression. The result of using
 @racket[honu-expression] can be accessed with the @racket[result] attribute.
 
