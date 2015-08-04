@@ -3,7 +3,7 @@
 (require "syntax.rkt"
          "literals.rkt"
          (for-syntax racket/base
-                     "parse2.rkt"
+                     "parse.rkt"
                      "literals.rkt"
                      "compile.rkt"
                      syntax/parse

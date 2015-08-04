@@ -3,11 +3,11 @@
 (require "syntax.rkt"
          "literals.rkt"
          (only-in "operator.rkt" honu-equal)
-         (only-in "honu2.rkt" honu-declaration separate-ids)
+         (only-in "honu.rkt" honu-declaration separate-ids)
          (for-syntax racket/base
                      "compile.rkt"
                      "literals.rkt"
-                     "parse2.rkt"
+                     "parse.rkt"
                      "util.rkt"
                      syntax/parse)
          racket/class)

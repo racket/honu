@@ -1,8 +1,8 @@
 #lang racket/base
 
 (require honu/core/private/syntax
-         honu/core/private/parse2
-         (for-syntax honu/core/private/parse2)
+         honu/core/private/parse
+         (for-syntax honu/core/private/parse)
          honu/core/private/literals
          (for-syntax honu/core/private/compile)
          (for-syntax racket/base)

@@ -14,7 +14,7 @@
                      "contexts.rkt"
                      "util.rkt"
                      "syntax.rkt"
-                     "parse2.rkt"
+                     "parse.rkt"
                      "literals.rkt"
                      )
          syntax/parse

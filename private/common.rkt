@@ -7,7 +7,7 @@
                      racket/base
                      honu/core/private/literals
                      honu/core/private/compile
-                     honu/core/private/parse2))
+                     honu/core/private/parse))
 
 (provide sqr)
 (define (sqr x) (* x x))
