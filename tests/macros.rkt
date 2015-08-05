@@ -1,5 +1,5 @@
 #lang honu
-
+/*
 macro testx () {x:expression} {
   var out1 = syntax(x)
   var out2 = syntax(+ 1)
@@ -21,3 +21,4 @@ macro testfor2 () {x:expression}{
 }
 
 testfor2 1 + 2
+*/
