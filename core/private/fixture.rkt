@@ -1,6 +1,5 @@
 #lang racket/base
 
-(require (for-syntax racket/base))
 
 (provide (rename-out [prop:fixture? fixture?])
          make-fixture

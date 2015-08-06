@@ -1,6 +1,5 @@
 #lang racket/base
 
-(require (for-syntax racket/base))
 
 (provide honu-transformer? make-honu-transformer)
 

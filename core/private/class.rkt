@@ -1,16 +1,19 @@
 #lang racket/base
 
-(require "syntax.rkt"
-         "literals.rkt"
-         (only-in "operator.rkt" honu-equal)
-         (only-in "honu.rkt" honu-declaration separate-ids)
-         (for-syntax racket/base
+(require (for-syntax racket/base
+                     syntax/parse
                      "compile.rkt"
                      "literals.rkt"
                      "parse.rkt"
-                     "util.rkt"
-                     syntax/parse)
-         racket/class)
+                     "util.rkt")
+         racket/class
+         (only-in "honu.rkt"
+                  honu-declaration
+                  separate-ids)
+         "literals.rkt"
+         (only-in "operator.rkt"
+                  honu-equal)
+         "syntax.rkt")
 
 (begin-for-syntax
   (define (replace-with-public method)

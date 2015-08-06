@@ -1,11 +1,23 @@
 #lang racket/base
 
-(require "syntax.rkt"
-         "operator.rkt"
-         "struct.rkt"
-         "honu-typed-scheme.rkt"
-         racket/match
+(require (for-syntax racket/base
+                     racket/string
+                     racket/syntax
+                     syntax/parse
+                     syntax/parse/experimental/reflect
+                     syntax/parse/experimental/splicing
+                     "compile.rkt"
+                     "debug.rkt"
+                     "literals.rkt"
+                     "parse.rkt"
+                     "util.rkt")
+         (for-meta 2 macro-debugger/emit
+                     racket/base
+                     syntax/parse
+                     "debug.rkt"
+                     "parse.rkt")
          racket/class
+         racket/match
          racket/require
          (only-in "literals.rkt"
                   honu-then
@@ -16,26 +28,9 @@
                   semicolon
                   honu-comma
                   define-literal)
-         (for-syntax syntax/parse
-                     syntax/parse/experimental/reflect
-                     syntax/parse/experimental/splicing
-                     macro-debugger/emit
-                     racket/syntax
-                     racket/pretty
-                     racket/string
-                     "compile.rkt"
-                     "util.rkt"
-                     "debug.rkt"
-                     "literals.rkt"
-                     "parse.rkt"
-                     racket/base)
-         (for-meta 2 racket/base
-                     syntax/parse
-                     racket/pretty
-                     macro-debugger/emit
-                     "compile.rkt"
-                     "debug.rkt"
-                     "parse.rkt"))
+         "operator.rkt"
+         "struct.rkt"
+         "syntax.rkt")
 
 (provide (all-from-out "struct.rkt"))
 

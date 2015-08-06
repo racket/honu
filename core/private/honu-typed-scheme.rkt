@@ -1,28 +1,17 @@
 #lang racket/base
 
-(require (for-syntax scheme/base
-                     syntax/stx
-                     syntax/name
+(require (for-syntax macro-debugger/emit
+                     scheme/base
                      syntax/define
                      syntax/parse
-                     syntax/parse/experimental/splicing
-                     scheme/splicing
-                     macro-debugger/emit
-                     racket/pretty
-                     "compile.rkt"
-                     "debug.rkt"
                      "contexts.rkt"
-                     "util.rkt"
-                     "syntax.rkt"
-                     "parse.rkt"
+                     "debug.rkt"
                      "literals.rkt"
-                     )
-         syntax/parse
-         "literals.rkt"
-         "debug.rkt")
-
-(require (for-meta 2 racket/base "util.rkt"))
-(require (for-meta 3 racket/base))
+                     "parse.rkt")
+         (for-meta 2 racket/base)
+         (for-meta 3 racket/base)
+         "debug.rkt"
+         "literals.rkt")
 
 (provide (all-defined-out))
 

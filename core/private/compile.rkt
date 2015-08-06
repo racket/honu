@@ -1,13 +1,11 @@
 #lang racket/base
 
-(require syntax/parse
-         "debug.rkt"
-         "literals.rkt"
-         (for-syntax racket/base
-                     "debug.rkt"))
+(require (for-syntax racket/base
+                     "debug.rkt")
+         (for-template racket/base)
+         "debug.rkt")
 
 ;; to get syntax as a literal
-(require (for-template racket/base))
 
 (provide (all-defined-out))
 

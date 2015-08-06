@@ -4,32 +4,34 @@
                     (require (for-syntax stuff ...)))
 
 ;; phase 0
-(require "literals.rkt"
-         "debug.rkt"
-         "compile.rkt"
-         "template.rkt"
-         "utils.rkt"
-         racket/list
-         (prefix-in transformer: "transformer.rkt")
-         (prefix-in fixture: "fixture.rkt")
-         "operator.rkt"
+(require (for-template racket/base
+                       racket/sequence
+                       "syntax.rkt")
          macro-debugger/emit
-         racket/pretty
-         syntax/stx
+         syntax/parse
          syntax/parse/experimental/splicing
-         syntax/parse)
+         syntax/stx
+         "compile.rkt"
+         "debug.rkt"
+         (prefix-in fixture: "fixture.rkt")
+         "literals.rkt"
+         "operator.rkt"
+         "template.rkt"
+         (prefix-in transformer: "transformer.rkt"))
+
 ;; phase 1
 (require-syntax racket/base
                 "compile.rkt"
                 "debug.rkt")
 
 ;; phase -1
-(require (for-template racket/base
-                       racket/splicing
-                       "syntax.rkt"
-                       "extra.rkt"))
 
 (provide parse parse-all)
+
+(define (strip-stops code)
+  (define-syntax-class stopper #:literal-sets (cruft)
+    [pattern honu-comma]
+    [pattern colon]) code)
 
 (define (get-value what)
   (syntax-local-value what (lambda () #f)))
@@ -347,10 +349,6 @@
                                             (if unary-transformer
                                               (unary-transformer right)
                                               (error 'unary "cannot be used as a unary operator in ~a" #'head))))
-                                        #;
-                                        (debug "Binary transformer ~a\n" binary-transformer)
-                                        #;
-                                        (emit-local-step stuff output #:id binary-transformer)
                                         (with-syntax ([out (parse-all output)])
                                           #'out))
 
@@ -427,7 +425,7 @@
                                  (define lookup (with-syntax ([(data ...)
                                                                (parse-comma-expression #'(stuff ...))]
                                                               [current current])
-                                                  (racket-syntax (do-lookup current data ...))))
+                                                  (racket-syntax (sequence-ref current data ...))))
                                  (if current
                                    (do-parse #'(rest ...) precedence left lookup)
                                    (do-parse #'(rest ...) precedence left value))])]
