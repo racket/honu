@@ -1,18 +1,16 @@
 #lang racket/base
 
 (provide (except-out (all-defined-out) test-delimiter))
-(require "debug.rkt"
+(require (for-syntax racket/base
+                     racket/set
+                     syntax/parse)
+         racket/list
          racket/match
+         racket/set
          syntax/parse
          syntax/parse/experimental/reflect
-         racket/set
-         (for-syntax racket/base
-                     racket/set
-                     syntax/parse
-                     "debug.rkt"
-                     )
          syntax/stx
-         racket/list)
+         "debug.rkt")
 
 
 (define (delim-identifier=? a b)

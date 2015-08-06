@@ -1,11 +1,10 @@
 #lang racket/base
 
 (require (for-syntax racket/base
-                     "transformer.rkt"
-                     "fixture.rkt"
+                     syntax/parse
                      "compile.rkt"
-                     "debug.rkt"
-                     syntax/parse))
+                     "fixture.rkt"
+                     "transformer.rkt"))
 
 (provide (all-defined-out))
 

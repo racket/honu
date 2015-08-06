@@ -1,13 +1,12 @@
 #lang racket/base
 
-(require "syntax.rkt"
-         "literals.rkt"
-         (for-syntax racket/base
-                     "parse.rkt"
-                     "literals.rkt"
-                     "compile.rkt"
+(require (for-syntax racket/base
+                     racket/syntax
                      syntax/parse
-                     racket/syntax))
+                     "compile.rkt"
+                     "literals.rkt"
+                     "parse.rkt")
+         "syntax.rkt")
 
 (provide honu-struct honu-struct? honu-struct-get)
 (define-values (honu-struct honu-struct? honu-struct-get)
