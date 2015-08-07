@@ -1,18 +1,14 @@
 #lang racket/base
 
-(require (for-syntax "transformer.rkt"
-                     syntax/parse
+(require (for-syntax syntax/parse
                      syntax/stx
                      racket/set
                      racket/syntax
                      macro-debugger/emit
-                     "template.rkt"
                      "literals.rkt"
                      "syntax.rkt"
-                     (prefix-in phase1: "parse.rkt")
                      "debug.rkt"
                      (prefix-in phase1: "compile.rkt")
-                     "util.rkt"
                      racket/base)
          (for-meta 2 syntax/parse
                      racket/base
@@ -22,8 +18,7 @@
                      racket/pretty
                      "literals.rkt"
                      "debug.rkt"
-                     (prefix-in phase2: "parse.rkt")
-                     (prefix-in phase2: "compile.rkt"))
+                     (prefix-in phase2: "parse.rkt"))
          (prefix-in phase0: "compile.rkt")
          racket/splicing
          "literals.rkt"
@@ -31,8 +26,6 @@
          "debug.rkt"
 
          (for-meta 0 "template.rkt" syntax/stx)
-
-         (for-meta -1 "literals.rkt" "compile.rkt" "parse.rkt" "parse-helper.rkt")
          syntax/parse)
 
 (module analysis racket/base
