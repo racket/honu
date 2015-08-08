@@ -24,6 +24,7 @@
                   honu-in
                   honu-in-lines
                   honu-prefix
+                  honu-rename
                   postfix
                   semicolon
                   honu-comma
@@ -225,10 +226,13 @@
   (define-splicing-syntax-class not-comma
     [pattern x #:when (not ((literal-set->predicate cruft) #'x))])
   (define-splicing-syntax-class require-form
-                                #:literals (honu-prefix honu-for-syntax)
+                                #:literals (honu-prefix honu-for-syntax honu-rename)
                                 #:literal-sets (cruft)
     [pattern (~seq honu-prefix prefix module:require-form)
              #:with result #'(prefix-in prefix module.result)]
+    [pattern (~seq honu-rename (~seq in (~datum %arrow) out) ... (~datum from) module:require-form)
+             #:with result
+             #'(rename-in module.result [in out] ...)]
     [pattern (~seq honu-for-syntax ~! (#%parens module:require-form))
              #:with result #'(for-syntax module.result)]
     [pattern x:str #:with result #'x]
@@ -250,11 +254,11 @@
     (syntax-parse code
       [(_ form1:require-form (~seq honu-comma form:require-form) ... . rest)
        (values
-         (racket-syntax (require (filtered-in (lambda (name)
+         (racket-syntax (require #|(filtered-in (lambda (name)
                                                 (regexp-replace* #rx"-"
                                                                  (regexp-replace* #rx"->" name "_to_")
-                                                                 "_"))
-                                              (combine-in form1.result form.result ...))))
+                                                                 "_"))|#
+                                              (combine-in form1.result form.result ...)))
          #'rest
          #f)])))
 

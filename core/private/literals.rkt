@@ -29,6 +29,7 @@
                 honu-where
                 honu-for-template
                 honu-prefix
+                honu-rename
                 honu-$
                 ;; FIXME: in-lines should probably not be here
                 honu-in-lines
