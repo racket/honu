@@ -36,7 +36,9 @@
                                          (:~ #\")))
 (define-lex-abbrev string (:: #\" (:* string-character) #\")) 
 (define-lex-abbrev operator (:or "+=" "-=" "*=" "/=" "!=" "=>" "==" "||" "&&" "<="
-                                 ">=" "<-" "!" "::" ":=" "%" "*" "-" symbolic))
+                                 ">=" "<-" "!" "::" ":=" "%" "+" "-" "*" "/" "^"
+                                 "->" "-"
+                                 symbolic))
 (define-lex-abbrev block-comment (:: "/*"
                                      (complement (:: any-string "*/" any-string))
                                      "*/"))
@@ -79,7 +81,6 @@
     [":" (token-identifier '%colon)]
     ["'" (token-identifier 'quote)]
     ["`" (token-identifier 'quasiquote)]
-    ["->" (token-identifier '%arrow)]
     [operator (token-identifier (string->symbol lexeme))]
     [";" (token-semicolon)]
     ;; strip the quotes from the resulting string
