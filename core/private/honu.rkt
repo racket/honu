@@ -230,7 +230,7 @@
                                 #:literal-sets (cruft)
     [pattern (~seq honu-prefix prefix module:require-form)
              #:with result #'(prefix-in prefix module.result)]
-    [pattern (~seq honu-rename (~seq in (~datum %arrow) out) ... (~datum from) module:require-form)
+    [pattern (~seq honu-rename (~seq in (~datum ->) out) ... (~datum from) module:require-form)
              #:with result
              #'(rename-in module.result [in out] ...)]
     [pattern (~seq honu-for-syntax ~! (#%parens module:require-form))
