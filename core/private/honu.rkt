@@ -323,13 +323,12 @@
          #t)])))
 
 (provide honu-->)
-(define-honu-fixture honu-->
+(define-honu-operator/syntax honu--> 8000 'left
   (lambda (left rest)
-    (syntax-parse rest #:literal-sets (cruft)
-      [(_ name:identifier (#%parens argument:honu-expression/comma) . more)
+    (syntax-parse rest #:literals (#%app) #:literal-sets (cruft)
+      [(#%app name:identifier argument:honu-expression ...)
        (with-syntax ([left left])
-         (values (racket-syntax (send/apply left name (list argument.result ...)))
-                 #'more))])))
+         (racket-syntax (send/apply left name (list argument.result ...))) )])))
 
 (begin-for-syntax
   (define-splicing-syntax-class (id-must-be what)
