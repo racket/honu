@@ -1,13 +1,9 @@
 #lang racket/base
 
-(require honu/core/private/syntax
-         honu/core/private/literals
+(require enforest
          (for-syntax syntax/parse
-                     honu/core/private/debug
                      racket/base
-                     honu/core/private/literals
-                     honu/core/private/compile
-                     honu/core/private/parse))
+                     enforest))
 
 (provide sqr)
 (define (sqr x) (* x x))

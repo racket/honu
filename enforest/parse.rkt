@@ -6,18 +6,17 @@
 ;; phase 0
 (require (for-template racket/base
                        racket/sequence
-                       "syntax.rkt")
+                       "def-forms.rkt")
          macro-debugger/emit
          syntax/parse
          syntax/parse/experimental/splicing
          syntax/stx
          "compile.rkt"
          "debug.rkt"
-         (prefix-in fixture: "fixture.rkt")
+         "transformer.rkt"
+         "def-forms.rkt"
          "literals.rkt"
-         "operator.rkt"
-         "template.rkt"
-         (prefix-in transformer: "transformer.rkt"))
+         "template.rkt")
 
 ;; phase 1
 (require-syntax racket/base
@@ -31,7 +30,7 @@
 (define (strip-stops code)
   (define-syntax-class stopper #:literal-sets (cruft)
     [pattern honu-comma]
-    [pattern colon]) code)
+    [pattern %colon]) code)
 
 (define (get-value what)
   (syntax-local-value what (lambda () #f)))
@@ -40,17 +39,17 @@
 (define (bound-to-operator? check)
   (let ([value (get-value check)])
     (debug 2 "operator? ~a ~a\n" check value)
-    (transformer:honu-operator? value)))
+    (operator? value)))
 
 (define (bound-to-fixture? check)
   (let ([value (get-value check)])
     (debug 2 "fixture? ~a ~a\n" check value)
-    (fixture:fixture? value)))
+    (fixture? value)))
 
 (define (bound-to-macro? check)
   (let ([value (get-value check)])
     (debug 2 "macro? ~a ~a\n" check value)
-    (transformer:honu-transformer? value)))
+    (honu-transformer? value)))
 
 (define (honu-macro? something)
   (and (identifier? something)
@@ -65,7 +64,7 @@
        (bound-to-fixture? something)))
 
 (define (semicolon? what)
-  (define-literal-set check (semicolon))
+  (define-literal-set check (%semicolon))
   (define is (and (identifier? what)
                     ((literal-set->predicate check) what)))
   (debug "Semicolon? ~a ~a\n" what is)
@@ -116,7 +115,7 @@
                     unparsed))])))))
 
 (define (stopper? what)
-  (define-literal-set check (honu-comma semicolon colon))
+  (define-literal-set check (honu-comma %semicolon %colon))
   (define is (and (identifier? what)
                   ((literal-set->predicate check) what)))
   (debug 2 "Comma? ~a ~a\n" what is)
@@ -200,8 +199,8 @@
                                       (do-parse-rest #'(stuff (... ...)) #'parse-more)]))
                                  (parse-more any)))])
 
-(provide honu-function)
-(define-splicing-syntax-class honu-function #:literal-sets (cruft)
+(provide honu-function-pattern)
+(define-splicing-syntax-class honu-function-pattern #:literal-sets (cruft)
   [pattern (~seq function:identifier (#%parens args ...) body:honu-body)
            #:with result
            (with-syntax ([(parsed-arguments ...)
@@ -289,7 +288,7 @@
     (if (parsed-syntax? stream)
       (values (left stream) #'())
       (syntax-parse stream #:literal-sets (cruft)
-        [((semicolon inner ...) rest ...)
+        [((%semicolon inner ...) rest ...)
          ;; nothing on the left side should interact with a semicolon
          (if current
            (values (left current)
@@ -315,17 +314,17 @@
               (do-parse #'(rest ...) precedence left #'head))]
            [(honu-fixture? #'head)
             (debug 2 "Fixture ~a\n" #'head)
-            (define transformer (fixture:fixture-ref (syntax-local-value #'head) 0))
+            (define transformer (fixture-ref (syntax-local-value #'head) 0))
             (define-values (output rest) (transformer current stream))
             (do-parse rest precedence left output)]
            [(honu-operator? #'head)
             (define operator (syntax-local-value #'head))
 
-            (define new-precedence (transformer:operator-precedence operator))
-            (define association (transformer:operator-association operator))
-            (define binary-transformer (transformer:operator-binary-transformer operator))
-            (define unary-transformer (transformer:operator-unary-transformer operator))
-            (define postfix? (transformer:operator-postfix? operator))
+            (define new-precedence (operator-precedence operator))
+            (define association (operator-association operator))
+            (define binary-transformer (operator-binary-transformer operator))
+            (define unary-transformer (operator-unary-transformer operator))
+            (define postfix? (operator-postfix? operator))
 
             (define higher
               (case association
@@ -398,12 +397,10 @@
                     (do-parse #'(rest ...) precedence left (racket-syntax x)))]
                  ;; [1, 2, 3] -> (list 1 2 3)
                  [(#%brackets stuff ...)
-                  (define-literal-set wheres (honu-where))
-                  (define-literal-set equals (honu-equal))
-                  (syntax-parse #'(stuff ...) #:literal-sets  (cruft wheres equals)
+                  (syntax-parse #'(stuff ...) #:literal-sets  (cruft)
                                 [(work:honu-expression 
-                                  colon (~seq variable:id honu-equal list:honu-expression (~optional honu-comma)) ...
-                                  (~seq honu-where where:honu-expression (~optional honu-comma)) ...)
+                                  %colon (~seq variable:id (~datum =) list:honu-expression (~optional honu-comma)) ...
+                                  (~seq (~datum where) where:honu-expression (~optional honu-comma)) ...)
                                  (define filter (if (attribute where)
                                                   #'((#:when where.result) ...)
                                                   #'()))
@@ -569,7 +566,7 @@
 (provide honu-identifier)
 (define-splicing-syntax-class honu-identifier
                               #:literal-sets (cruft)
-  [pattern (~and (~not semicolon)
+  [pattern (~and (~not %semicolon)
                  x:id) #:with result #'x])
 
 (provide honu-number)

@@ -6,9 +6,11 @@
                      racket/syntax
                      macro-debugger/emit
                      "literals.rkt"
-                     "syntax.rkt"
-                     "debug.rkt"
-                     (prefix-in phase1: "compile.rkt")
+                     enforest/literals
+                     enforest/def-forms                 
+                     enforest/syntax
+                     enforest/debug
+                     (prefix-in phase1: enforest/compile)
                      racket/base)
          (for-meta 2 syntax/parse
                      racket/base
@@ -16,22 +18,27 @@
                      racket/syntax
                      racket/set
                      racket/pretty
+                     enforest/literals
+                     enforest/debug
                      "literals.rkt"
-                     "debug.rkt"
-                     (prefix-in phase2: "parse.rkt"))
-         (prefix-in phase0: "compile.rkt")
+                     
+                     (prefix-in phase2: enforest/parse))
+         (prefix-in phase0: enforest/compile)
          racket/splicing
+         enforest/literals
          "literals.rkt"
-         "syntax.rkt"
-         "debug.rkt"
+         enforest/syntax
+         enforest/def-forms         
+         enforest/debug
 
-         (for-meta 0 "template.rkt" syntax/stx)
+         (for-meta 0 enforest/template syntax/stx)
          syntax/parse)
 
 (module analysis racket/base
   (require syntax/parse
+           enforest/literals
            "literals.rkt"
-           "debug.rkt"
+           enforest/debug
            "util.rkt"
            (prefix-in syntax: syntax/parse/private/residual-ct)
            racket/syntax
@@ -69,7 +76,7 @@
   (define (convert-pattern original-pattern new-names)
     (define-splicing-syntax-class pattern-type
         #:literal-sets (cruft)
-        [pattern (~seq name colon class)
+        [pattern (~seq name %colon class)
                  #:with (result ...)
                  (with-syntax ([new-name (pattern-variable-name (hash-ref new-names (syntax-e #'name)))])
                    #'((~var new-name class #:attr-name-separator "_")))]
@@ -107,7 +114,7 @@
       (define-splicing-syntax-class maybe
           #:literal-sets (cruft)
           #:literals ([ellipses ...])
-          [pattern (~seq class:id colon name:id)
+          [pattern (~seq class:id %colon name:id)
                    #:attr result
                    (with-syntax ([name.result (format-id #'name "~a_result" #'name)])
                      (set (pattern-variable #'name #'class 0 #'class)))]

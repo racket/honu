@@ -6,32 +6,24 @@
                      syntax/parse
                      syntax/parse/experimental/reflect
                      syntax/parse/experimental/splicing
-                     "compile.rkt"
-                     "debug.rkt"
+                     enforest
                      "literals.rkt"
-                     "parse.rkt"
                      "util.rkt")
          (for-meta 2 macro-debugger/emit
                      racket/base
                      syntax/parse
-                     "debug.rkt"
-                     "parse.rkt")
+                     enforest)
          racket/class
          racket/match
          racket/require
          (only-in "literals.rkt"
                   honu-then
                   honu-in
-                  honu-in-lines
                   honu-prefix
-                  honu-rename
-                  postfix
-                  semicolon
-                  honu-comma
-                  define-literal)
+                  honu-rename)
          "operator.rkt"
          "struct.rkt"
-         "syntax.rkt")
+         enforest)
 
 (provide (all-from-out "struct.rkt"))
 

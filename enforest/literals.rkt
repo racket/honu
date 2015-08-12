@@ -1,6 +1,8 @@
 #lang racket/base
 
 (provide (all-defined-out))
+(require "def-forms.rkt" syntax/parse)
+#|
 (require syntax/parse
          (for-syntax racket/base
                      syntax/parse))
@@ -12,34 +14,39 @@
                          (raise-syntax-error 'name
                                              "this is a literal and cannot be used outside a macro" (syntax->datum stx))))
    ...))
-
-(define-literal honu-return)
-(define-literal semicolon)
-(define-literal honu-|| honu-%
-                honu-%=
-                honu-&= honu-^= honu-\|= honu-<<= honu->>= honu->>>=
-                honu->> honu-<< honu->>> 
-                honu-!=
-                honu-<-
-                honu-literal
-                honu-then
-                honu-? honu-: honu-comma honu-. #%braces #%brackets #%parens colon
+|#
+;(define-literal honu-return)
+;(define-literal semicolon)
+(define-literal
+;                honu-|| honu-%
+;                honu-%=
+;                honu-&= honu-^= honu-\|= honu-<<= honu->>= honu->>>=
+;                honu->> honu-<< honu->>> 
+;                honu-!=
+;                honu-<-
+;                honu-literal
+;                honu-then
+;                honu-?
+                ;honu-:
+                honu-comma ;honu-.
+                #%braces #%brackets #%parens %colon
+                %semicolon
                 ellipses-comma ellipses-comma* ellipses-repeat
-                honu-in
-                honu-where
-                honu-for-template
-                honu-prefix
-                honu-rename
+;                honu-in
+;                honu-where
+;                honu-for-template
+;                honu-prefix
+;                honu-rename
                 honu-$
                 ;; FIXME: in-lines should probably not be here
                 honu-in-lines
                 postfix)
-
+#|
 (define-syntax-rule (define-literal+set set literal ...)
                     (begin
                       (define-literal literal ...)
                       (begin-for-syntax
                         (define-literal-set set (literal ...)))))
-
+|#
 (define-literal-set cruft (#%parens #%brackets #%braces
-                           semicolon colon honu-comma))
+                           %semicolon %colon honu-comma))

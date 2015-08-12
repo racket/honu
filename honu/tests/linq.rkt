@@ -1,14 +1,10 @@
 #lang racket/base
 
-(require honu/core/private/syntax
-         honu/core/private/honu-typed-scheme
-         honu/core/private/literals
+(require enforest
          racket/list
          racket/match
          (for-syntax racket/base
-                     honu/core/private/literals
-                     honu/core/private/parse
-                     honu/core/private/compile
+                     enforest
                      syntax/parse))
 
 (define-literal+set linq-literals
