@@ -3,10 +3,8 @@
 (require (for-syntax racket/base
                      racket/syntax
                      syntax/parse
-                     "compile.rkt"
-                     "literals.rkt"
-                     "parse.rkt")
-         "syntax.rkt")
+                     enforest)
+         enforest)
 
 (provide honu-struct honu-struct? honu-struct-get)
 (define-values (honu-struct honu-struct? honu-struct-get)

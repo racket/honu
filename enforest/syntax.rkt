@@ -3,11 +3,11 @@
 (provide (all-defined-out))
 
 (require (for-syntax racket/base
-                     syntax/define
-                     "transformer.rkt"))
+                     syntax/define)
+         "def-forms.rkt")
 
-(provide define-honu-syntax)
-(define-syntax (define-honu-syntax stx)
+#;(provide define-honu-syntax)
+#;(define-syntax (define-honu-syntax stx)
   (let-values ([(id rhs) (normalize-definition stx #'lambda #f)])
     (with-syntax ([id id]
                   [rhs rhs])

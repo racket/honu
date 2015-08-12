@@ -2,11 +2,8 @@
 
 ;; Public API for interfacing with the honu macro system
 
-(require "private/syntax.rkt"
-         "private/literals.rkt"
-         (for-syntax "private/compile.rkt"
-                     "private/syntax.rkt"
-                     "private/parse.rkt"))
+(require enforest
+         (for-syntax enforest))
 (provide define-honu-syntax
          define-literal
          (for-syntax racket-syntax

@@ -1,10 +1,7 @@
 #lang racket/base
 
-(require honu/core/private/syntax
-         honu/core/private/parse
-         (for-syntax honu/core/private/parse)
-         honu/core/private/literals
-         (for-syntax honu/core/private/compile)
+(require enforest
+         (for-syntax enforest)
          (for-syntax racket/base)
          (for-syntax (prefix-in parse: syntax/parse))
          (prefix-in parse: syntax/parse))

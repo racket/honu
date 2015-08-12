@@ -2,9 +2,8 @@
 
 (require (for-syntax racket/base
                      syntax/parse
-                     "compile.rkt"
+                     enforest
                      "literals.rkt"
-                     "parse.rkt"
                      "util.rkt")
          racket/class
          (only-in "honu.rkt"
@@ -13,7 +12,7 @@
          "literals.rkt"
          (only-in "operator.rkt"
                   honu-equal)
-         "syntax.rkt")
+         enforest)
 
 (begin-for-syntax
   (define (replace-with-public method)
@@ -23,7 +22,7 @@
   (define-literal-set equals (honu-equal))
   (define-splicing-syntax-class honu-class-thing
                                 #:literal-sets (equals)
-    [pattern method:honu-function
+    [pattern method:honu-function-pattern
              #:with result (replace-with-public (local-binding method.result))]
     [pattern var:honu-declaration
              #:with result #'(field [var.name var.expression] ...)]))

@@ -4,13 +4,10 @@
                      scheme/base
                      syntax/define
                      syntax/parse
-                     "debug.rkt"
-                     "literals.rkt"
-                     "parse.rkt")
+                     enforest)
          (for-meta 2 racket/base)
          (for-meta 3 racket/base)
-         "debug.rkt"
-         "literals.rkt")
+         enforest)
 
 (provide (all-defined-out))
 

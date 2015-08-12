@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require "read.rkt"
-         "private/honu-typed-scheme.rkt"
+         "private/honu-top.rkt"
          racket/port)
 
 ;; at the repl, honu will only read a single line at a time regardless

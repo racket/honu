@@ -9,11 +9,12 @@
                        "private/macro.rkt"
                        "private/class.rkt"
                        "private/operator.rkt"
-                       "private/syntax.rkt"
+                       enforest/syntax
                        (prefix-in literal: "private/literals.rkt")
+                       (prefix-in literal: enforest/literals)
                        (prefix-in syntax-parse: syntax/parse)
                        (prefix-in racket: racket/base)
-                       (prefix-in parse: "private/parse.rkt")
+                       (prefix-in parse: enforest/parse)
                        "private/honu.rkt"))
     (provide (for-meta meta-level 
                        (rename-out [parse:honu-expression expression]
@@ -82,9 +83,9 @@
                                    [literal:honu-prefix prefix]
                                    [literal:honu-rename rename]
                                    [literal:honu-then then]
-                                   [literal:colon %colon]
+                                   [literal:%colon %colon]
                                    [literal:honu-in in]
-                                   [literal:semicolon %semicolon]
+                                   [literal:%semicolon %semicolon]
                                    [literal:honu-comma honu-comma]
                                    [literal:honu-$ honu-$]
                                    [literal:honu-<- <-]
@@ -111,7 +112,7 @@
                        (... ...)
                        ))))
 
-(require "private/honu-typed-scheme.rkt")
+(require "private/honu-top.rkt")
 
 ;; Provide standard stuff at phase 1
 (standard-honu 1)
@@ -119,3 +120,4 @@
 
 (provide (rename-out [#%dynamic-honu-module-begin #%module-begin]
                      [honu-top-interaction #%top-interaction]))
+
