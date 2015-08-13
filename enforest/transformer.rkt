@@ -1,7 +1,6 @@
 #lang racket/base
 (require racket/syntax)
 
-
 (provide honu-transformer? make-honu-transformer honu-trans-ref)
 
 (define-values (prop:honu-transformer honu-transformer? honu-transformer-ref)
@@ -41,8 +40,7 @@
                                         (op-fn #'l))]
                                      [(_ l r ...)
                                       (let ([op-fn (operator-binary-transformer self)])
-                                        (apply op-fn (cons #'l (syntax->list #'(r ...)))))]
-                                     ))))
+                                        (apply op-fn (cons #'l (syntax->list #'(r ...)))))]))))
 
 (define (get n)
   (lambda (operator)
