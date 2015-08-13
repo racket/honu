@@ -3,6 +3,7 @@
 (define-syntax-rule (standard-honu meta-level)
   (begin
     (require (for-meta meta-level
+                       (only-in racket/base #%app)
                        racket/base
                        racket/class
                        (prefix-in list: racket/list)
@@ -107,6 +108,7 @@
                        mergeSyntax
                        this
                        error
+                       #%app
                        #%top
                        #%datum
                        (... ...)
