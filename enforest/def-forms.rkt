@@ -27,26 +27,26 @@
      #'(define-syntax name (make-fixture transformer))]))
 
 (define-syntax-rule (define-binary-operator name precedence associativity operator)
-    (define-honu-operator/syntax name precedence associativity
-                                 ;; binary
-                                 (lambda (left right)
-                                   (with-syntax ([left left]
-                                                 [right right])
-                                     (racket-syntax (operator left right))))))
+  (define-honu-operator/syntax name precedence associativity
+    ;; binary
+    (lambda (left . right)
+      (with-syntax ([left left]
+                    [(right (... ...)) right])
+        (racket-syntax (operator left right (... ...)))) ) ))
 
 (define-syntax-rule (define-unary+binary-operator name precedence associativity operator)
-    (define-honu-operator/syntax name precedence associativity
-                                 ;; binary
-                                 (lambda (left right)
-                                   (with-syntax ([left left]
-                                                 [right right])
-                                     (racket-syntax (operator left right))))
-                                 ;; unary
-                                 (lambda (arg)
-                                   (with-syntax ([arg arg])
-                                     (racket-syntax (operator arg))))
-                                 ;; binary operators should not be able to be postfix
-                                 #f))
+  (define-honu-operator/syntax name precedence associativity
+    ;; binary
+    (lambda (left . right)
+      (with-syntax ([left left]
+                    [(right (... ...)) right])
+        (racket-syntax (operator left right (... ...)))) )
+    ;; unary
+    (lambda (arg)
+      (with-syntax ([arg arg])
+        (racket-syntax (operator arg))))
+    ;; binary operators should not be able to be postfix
+    #f))
 
 (define-syntax-rule (define-unary-operator name precedence postfix? operator)
                     ;; associativity dont matter for unary 

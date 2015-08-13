@@ -5,7 +5,9 @@
          "compile.rkt"
          "literals.rkt"
          "def-forms.rkt"
-         "parse.rkt")
+         "parse.rkt"
+         "unparsed-begin.rkt")
+
 
 (provide (all-from-out
           "syntax.rkt"
@@ -13,4 +15,5 @@
           "compile.rkt"
           "def-forms.rkt"
           "literals.rkt"
-          "parse.rkt"))
+          "parse.rkt"
+          "unparsed-begin.rkt"))

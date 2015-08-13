@@ -1,10 +1,9 @@
 #lang racket/base
+(require enforest enforest/literals)
+(provide (all-defined-out)
+         (all-from-out enforest/literals))
 
-(provide (all-defined-out))
-(require enforest)
-
-(define-literal
-                honu-|| honu-%
+(define-literal honu-|| honu-%
                 honu-%=
                 honu-&= honu-^= honu-\|= honu-<<= honu->>= honu->>>=
                 honu->> honu-<< honu->>> 
@@ -14,18 +13,9 @@
                 honu-then
                 honu-?
                 honu-:
-  ;                honu-comma ;
-                 honu-.
-;                #%braces #%brackets #%parens %colon
-;                %semicolon
-;                ellipses-comma ellipses-comma* ellipses-repeat
+                honu-.
                 honu-in
                 honu-where
                 honu-for-template
                 honu-prefix
-                honu-rename
-;                honu-$
-                ;; FIXME: in-lines should probably not be here
-;                honu-in-lines
-                ;                postfix
-                )
+                honu-rename)
