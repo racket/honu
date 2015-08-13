@@ -1,7 +1,8 @@
 #lang racket/base
+(require racket/syntax)
 
 
-(provide honu-transformer? make-honu-transformer)
+(provide honu-transformer? make-honu-transformer honu-trans-ref)
 
 (define-values (prop:honu-transformer honu-transformer? honu-transformer-ref)
                (make-struct-type-property 'honu-transformer))
@@ -33,7 +34,15 @@
                (make-struct-type 'honu-operator #f (length operator-fields) 0 #f 
                                  (list (list prop:honu-operator #t))
                                  (current-inspector)
-                                 0))
+                                 (λ(self stx)
+                                   (syntax-case stx ()
+                                     [(_ l)
+                                      (let ([op-fn (operator-unary-transformer self)])
+                                        (op-fn #'l))]
+                                     [(_ l r ...)
+                                      (let ([op-fn (operator-binary-transformer self)])
+                                        (apply op-fn (cons #'l (syntax->list #'(r ...)))))]
+                                     ))))
 
 (define (get n)
   (lambda (operator)

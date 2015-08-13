@@ -6,14 +6,6 @@
                      syntax/define)
          "def-forms.rkt")
 
-#;(provide define-honu-syntax)
-#;(define-syntax (define-honu-syntax stx)
-  (let-values ([(id rhs) (normalize-definition stx #'lambda #f)])
-    (with-syntax ([id id]
-                  [rhs rhs])
-      (syntax/loc stx
-                 (define-syntax id (make-honu-transformer rhs))))))
-
 ;; Do any honu-specific expansion here
 (require (for-syntax
            "template.rkt" ;; for compress-dollars at phase 1

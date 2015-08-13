@@ -25,7 +25,7 @@
 
 ;; phase -1
 
-(provide parse parse-all)
+(provide parse parse-all do-parse do-macro)
 
 (define (strip-stops code)
   (define-syntax-class stopper #:literal-sets (cruft)
@@ -249,9 +249,8 @@
 
 ;; parse one form
 ;; return the parsed stuff and the unparsed stuff
-(define (parse input)
-  (define (do-macro head rest precedence left current stream)
-    (if current
+(define (do-macro head rest precedence left current stream)
+  (if current
       (values (left current) stream)
       (begin
         (debug "Honu macro at phase ~a: ~a ~a\n" (syntax-local-phase-level) head (syntax-local-value head))
@@ -271,202 +270,204 @@
             (define terminate (definition? re-parse))
             (debug "Terminate? ~a\n" terminate)
             (if terminate
-              (values (left re-parse)
-                      #'rest)
-              (do-parse #'rest precedence
-                        left re-parse)))))))
-  (define (do-parse stream precedence left current)
-    (define-syntax-class atom
-      [pattern x:identifier #:when (not (free-identifier=? #'#%braces #'x))]
-      [pattern x:str]
-      [pattern x:number])
+                (values (left re-parse)
+                        #'rest)
+                (do-parse #'rest precedence
+                          left re-parse)))))))
+(define (do-parse stream precedence left current)
+  (define-syntax-class atom
+    [pattern x:identifier #:when (not (free-identifier=? #'#%braces #'x))]
+    [pattern x:str]
+    [pattern x:number])
 
-    (debug "parse ~a precedence ~a left ~a current ~a properties ~a\n"
-           (syntax->datum stream) precedence left current
-           (syntax-property-symbol-keys stream))
-    (define final (if current current (racket-syntax (void))))
-    (if (parsed-syntax? stream)
+  (debug "parse ~a precedence ~a left ~a current ~a properties ~a\n"
+         (syntax->datum stream) precedence left current
+         (syntax-property-symbol-keys stream))
+  (define final (if current current (racket-syntax (void))))
+  (if (parsed-syntax? stream)
       (values (left stream) #'())
       (syntax-parse stream #:literal-sets (cruft)
-        [((%semicolon inner ...) rest ...)
-         ;; nothing on the left side should interact with a semicolon
-         (if current
-           (values (left current)
-                   stream)
-           (begin
-             (with-syntax ()
-               (values (left (parse-delayed inner ...))
-                       #'(rest ...)))))]
-        [()
-         (debug "Empty input out: left ~a ~a\n" left (left final))
-         (values (left final) #'())]
-        [(head rest ...)
-         (debug 2 "Not a special expression..\n")
-         (cond
-           [(honu-macro? #'head)
-            (debug "Macro ~a\n" #'head)
-            (do-macro #'head #'(rest ...) precedence left current stream)]
-           [(parsed-syntax? #'head)
-            (debug "Parsed syntax ~a\n" #'head)
-            (emit-local-step #'head #'head #:id #'do-parse)
-            (if current
-              (values current stream)
-              (do-parse #'(rest ...) precedence left #'head))]
-           [(honu-fixture? #'head)
-            (debug 2 "Fixture ~a\n" #'head)
-            (define transformer (fixture-ref (syntax-local-value #'head) 0))
-            (define-values (output rest) (transformer current stream))
-            (do-parse rest precedence left output)]
-           [(honu-operator? #'head)
-            (define operator (syntax-local-value #'head))
+                    [((%semicolon inner ...) rest ...)
+                     ;; nothing on the left side should interact with a semicolon
+                     (if current
+                         (values (left current)
+                                 stream)
+                         (begin
+                           (with-syntax ()
+                             (values (left (parse-delayed inner ...))
+                                     #'(rest ...)))))]
+                    [()
+                     (debug "Empty input out: left ~a ~a\n" left (left final))
+                     (values (left final) #'())]
+                    [(head rest ...)
+                     (debug 2 "Not a special expression..\n")
+                     (cond
+                       [(honu-macro? #'head)
+                        (debug "Macro ~a\n" #'head)
+                        (do-macro #'head #'(rest ...) precedence left current stream)]
+                       [(parsed-syntax? #'head)
+                        (debug "Parsed syntax ~a\n" #'head)
+                        (emit-local-step #'head #'head #:id #'do-parse)
+                        (if current
+                            (values current stream)
+                            (do-parse #'(rest ...) precedence left #'head))]
+                       [(honu-fixture? #'head)
+                        (debug 2 "Fixture ~a\n" #'head)
+                        (define transformer (fixture-ref (syntax-local-value #'head) 0))
+                        (define-values (output rest) (transformer current stream))
+                        (do-parse rest precedence left output)]
+                       [(honu-operator? #'head)
+                        (define operator (syntax-local-value #'head))
 
-            (define new-precedence (operator-precedence operator))
-            (define association (operator-association operator))
-            (define binary-transformer (operator-binary-transformer operator))
-            (define unary-transformer (operator-unary-transformer operator))
-            (define postfix? (operator-postfix? operator))
+                        (define new-precedence (operator-precedence operator))
+                        (define association (operator-association operator))
+                        (define binary-transformer (operator-binary-transformer operator))
+                        (define unary-transformer (operator-unary-transformer operator))
+                        (define postfix? (operator-postfix? operator))
 
-            (define higher
-              (case association
-                [(left) >]
-                [(right) >=]
-                [else (raise-syntax-error 'parse "invalid associativity. must be either 'left or 'right" association)]))
-            (debug "precedence old ~a new ~a higher? ~a\n" precedence new-precedence (higher new-precedence precedence))
-            (if (higher new-precedence precedence)
-              (let-values ([(parsed unparsed)
-                            (do-parse #'(rest ...) new-precedence
-                                      (lambda (stuff)
-                                        (define right (parse-all stuff))
-                                        (define output
+                        (define higher
+                          (case association
+                            [(left) >]
+                            [(right) >=]
+                            [else (raise-syntax-error 'parse "invalid associativity. must be either 'left or 'right" association)]))
+                        (debug "precedence old ~a new ~a higher? ~a\n" precedence new-precedence (higher new-precedence precedence))
+                        (if (higher new-precedence precedence)
+                            (let-values ([(parsed unparsed)
+                                          (do-parse #'(rest ...) new-precedence
+                                                    (lambda (stuff)
+                                                      (define right (parse-all stuff))
+                                                      (define output
+                                                        (if current
+                                                            (if binary-transformer
+                                                                (binary-transformer (parse-all-expression current) right)
+                                                                ;; use a unary transformer in postfix position
+                                                                (if (and postfix? unary-transformer)
+                                                                    (unary-transformer current)
+                                                                    (error 'binary "cannot be used as a binary operator in ~a" #'head)))
+                                                            (if unary-transformer
+                                                                (unary-transformer right)
+                                                                (error 'unary "cannot be used as a unary operator in ~a" #'head))))
+                                                      (with-syntax ([out (parse-all output)])
+                                                        #'out))
+
+                                                    #f)])
+                              (do-parse unparsed precedence left parsed))
+                            ;; if we have a unary transformer then we have to keep parsing
+                            (if unary-transformer
+                                (if current
+                                    (if postfix?
+                                        (do-parse #'(rest ...)
+                                                  precedence 
+                                                  left
+                                                  (unary-transformer current))
+                                        (values (left current) stream))
+
+                                    (do-parse #'(rest ...) new-precedence
+                                              (lambda (stuff)
+                                                (define right (parse-all stuff))
+                                                (define output (unary-transformer right))
+                                                ;; apply the left function because
+                                                ;; we just went ahead with parsing without
+                                                ;; caring about precedence
+                                                (with-syntax ([out (left (parse-all output))])
+                                                  #'out))
+                                              #f))
+                                ;; otherwise we have a binary transformer (or no transformer..??)
+                                ;; so we must have made a recursive call to parse, just return the
+                                ;; left hand
+                                (values (left current) stream))
+                            )]
+                       [else
+                        (define-splicing-syntax-class no-left
+                          [pattern (~seq) #:when (and (= precedence 0) (not current))])
+                        (syntax-parse #'(head rest ...) #:literal-sets (cruft)
+                                      [body:honu-body
+                                       (if current
+                                           (values (left current) stream)
+                                           (values (left #'body.result) #'()))]
+                                      [else 
+                                       (debug "Parse a single thing ~a\n" (syntax->datum #'head))
+                                       (syntax-parse #'head
+                                         #:literal-sets (cruft)
+                                         [x:atom
+                                          (debug 2 "atom ~a current ~a\n" #'x current)
                                           (if current
-                                            (if binary-transformer
-                                              (binary-transformer (parse-all-expression current) right)
-                                              ;; use a unary transformer in postfix position
-                                              (if (and postfix? unary-transformer)
-                                                (unary-transformer current)
-                                                (error 'binary "cannot be used as a binary operator in ~a" #'head)))
-                                            (if unary-transformer
-                                              (unary-transformer right)
-                                              (error 'unary "cannot be used as a unary operator in ~a" #'head))))
-                                        (with-syntax ([out (parse-all output)])
-                                          #'out))
+                                              (values (left current) stream)
+                                              (do-parse #'(rest ...) precedence left (racket-syntax x)))]
+                                         ;; [1, 2, 3] -> (list 1 2 3)
+                                         [(#%brackets stuff ...)
+                                          (syntax-parse #'(stuff ...) #:literal-sets  (cruft)
+                                                        [(work:honu-expression 
+                                                          %colon (~seq variable:id (~datum =) list:honu-expression (~optional honu-comma)) ...
+                                                          (~seq (~datum where) where:honu-expression (~optional honu-comma)) ...)
+                                                         (define filter (if (attribute where)
+                                                                            #'((#:when where.result) ...)
+                                                                            #'()))
+                                                         (define comprehension
+                                                           (with-syntax ([((filter ...) ...) filter])
+                                                             (racket-syntax (for/list ([variable list.result]
+                                                                                       ...
+                                                                                       filter ... ...)
+                                                                              work.result))))
+                                                         (if current
+                                                             (values (left current) stream)
+                                                             (do-parse #'(rest ...) precedence left comprehension))]
+                                                        [else
+                                                         (debug "Current is ~a\n" current)
+                                                         (define value (with-syntax ([(data ...)
+                                                                                      (parse-comma-expression #'(stuff ...))])
+                                                                         (debug "Create list from ~a\n" #'(data ...))
+                                                                         (racket-syntax (list data ...))))
+                                                         (define lookup (with-syntax ([(data ...)
+                                                                                       (parse-comma-expression #'(stuff ...))]
+                                                                                      [current current])
+                                                                          (racket-syntax (sequence-ref current data ...))))
+                                                         (if current
+                                                             (do-parse #'(rest ...) precedence left lookup)
+                                                             (do-parse #'(rest ...) precedence left value))])]
+                                         ;; block of code
+                                         [body:honu-body
+                                          (if current
+                                              (values (left current) stream)
+                                              (do-parse #'(rest ...) precedence left #'body.result))] 
+                                         ;; expression or function application
+                                         [(#%parens args ...)
+                                          (debug "Maybe function call with ~a\n" #'(args ...))
+                                          (if current
+                                              ;; FIXME: 9000 is an arbitrary precedence level for
+                                              ;; function calls
+                                              (with-syntax ([app (datum->syntax #'head '#%app)])
+                                                (if (> precedence 9000)
+                                                    (let ()
+                                                      (debug 2 "higher precedence call ~a\n" current)
+                                                      (define call (with-syntax ([current (left current)]
+                                                                                 [(parsed-args ...)
+                                                                                  (parse-comma-expression #'(args ...)) ])
+                                                                     (racket-syntax (app current parsed-args ...))))
+                                                      (do-parse #'(rest ...) 9000 (lambda (x) x) call))
+                                                    (let ()
+                                                      (debug 2 "function call ~a\n" left)
+                                                      (define call (with-syntax ([current current]
+                                                                                 [(parsed-args ...)
+                                                                                  (parse-comma-expression #'(args ...)) ])
+                                                                     (debug "Parsed args ~a\n" #'(parsed-args ...))
+                                                                     (racket-syntax (app current parsed-args ...))))
+                                                      (do-parse #'(rest ...) precedence left call))))
+                                              (let ()
+                                                (debug "inner expression ~a\n" #'(args ...))
+                                                (define-values (inner-expression unparsed) (parse #'(args ...)))
+                                                (when (not (empty-syntax? unparsed))
+                                                  (error 'parse "expression had unparsed elements ~a" unparsed))
+                                                (do-parse #'(rest ...) precedence left inner-expression)))]
+                                         [else (error 'parser "don't know how to parse ~a" #'head)])])])])))
 
-                                      #f)])
-                (do-parse unparsed precedence left parsed))
-              ;; if we have a unary transformer then we have to keep parsing
-              (if unary-transformer
-                (if current
-                  (if postfix?
-                    (do-parse #'(rest ...)
-                              precedence 
-                              left
-                              (unary-transformer current))
-                    (values (left current) stream))
 
-                  (do-parse #'(rest ...) new-precedence
-                            (lambda (stuff)
-                              (define right (parse-all stuff))
-                              (define output (unary-transformer right))
-                              ;; apply the left function because
-                              ;; we just went ahead with parsing without
-                              ;; caring about precedence
-                              (with-syntax ([out (left (parse-all output))])
-                                #'out))
-                            #f))
-                ;; otherwise we have a binary transformer (or no transformer..??)
-                ;; so we must have made a recursive call to parse, just return the
-                ;; left hand
-                (values (left current) stream))
-              )]
-           [else
-            (define-splicing-syntax-class no-left
-              [pattern (~seq) #:when (and (= precedence 0) (not current))])
-            (syntax-parse #'(head rest ...) #:literal-sets (cruft)
-              [body:honu-body
-               (if current
-                 (values (left current) stream)
-                 (values (left #'body.result) #'()))]
-              [else 
-               (debug "Parse a single thing ~a\n" (syntax->datum #'head))
-               (syntax-parse #'head
-                 #:literal-sets (cruft)
-                 [x:atom
-                  (debug 2 "atom ~a current ~a\n" #'x current)
-                  (if current
-                    (values (left current) stream)
-                    (do-parse #'(rest ...) precedence left (racket-syntax x)))]
-                 ;; [1, 2, 3] -> (list 1 2 3)
-                 [(#%brackets stuff ...)
-                  (syntax-parse #'(stuff ...) #:literal-sets  (cruft)
-                                [(work:honu-expression 
-                                  %colon (~seq variable:id (~datum =) list:honu-expression (~optional honu-comma)) ...
-                                  (~seq (~datum where) where:honu-expression (~optional honu-comma)) ...)
-                                 (define filter (if (attribute where)
-                                                  #'((#:when where.result) ...)
-                                                  #'()))
-                                 (define comprehension
-                                   (with-syntax ([((filter ...) ...) filter])
-                                     (racket-syntax (for/list ([variable list.result]
-                                                               ...
-                                                               filter ... ...)
-                                                      work.result))))
-                                 (if current
-                                   (values (left current) stream)
-                                   (do-parse #'(rest ...) precedence left comprehension))]
-                                [else
-                                 (debug "Current is ~a\n" current)
-                                 (define value (with-syntax ([(data ...)
-                                                              (parse-comma-expression #'(stuff ...))])
-                                                 (debug "Create list from ~a\n" #'(data ...))
-                                                 (racket-syntax (list data ...))))
-                                 (define lookup (with-syntax ([(data ...)
-                                                               (parse-comma-expression #'(stuff ...))]
-                                                              [current current])
-                                                  (racket-syntax (sequence-ref current data ...))))
-                                 (if current
-                                   (do-parse #'(rest ...) precedence left lookup)
-                                   (do-parse #'(rest ...) precedence left value))])]
-                 ;; block of code
-                 [body:honu-body
-                  (if current
-                    (values (left current) stream)
-                    (do-parse #'(rest ...) precedence left #'body.result))] 
-                 ;; expression or function application
-                 [(#%parens args ...)
-                  (debug "Maybe function call with ~a\n" #'(args ...))
-                  (if current
-                    ;; FIXME: 9000 is an arbitrary precedence level for
-                    ;; function calls
-                    (with-syntax ([app (datum->syntax #'head '#%app)])
-                          (if (> precedence 9000)
-                              (let ()
-                                (debug 2 "higher precedence call ~a\n" current)
-                                (define call (with-syntax ([current (left current)]
-                                                           [(parsed-args ...)
-                                                            (parse-comma-expression #'(args ...)) ])
-                                               (racket-syntax (app current parsed-args ...))))
-                                (do-parse #'(rest ...) 9000 (lambda (x) x) call))
-                              (let ()
-                                (debug 2 "function call ~a\n" left)
-                                (define call (with-syntax ([current current]
-                                                           [(parsed-args ...)
-                                                            (parse-comma-expression #'(args ...)) ])
-                                               (debug "Parsed args ~a\n" #'(parsed-args ...))
-                                               (racket-syntax (app current parsed-args ...))))
-                                (do-parse #'(rest ...) precedence left call))))
-                    (let ()
-                      (debug "inner expression ~a\n" #'(args ...))
-                      (define-values (inner-expression unparsed) (parse #'(args ...)))
-                      (when (not (empty-syntax? unparsed))
-                        (error 'parse "expression had unparsed elements ~a" unparsed))
-                      (do-parse #'(rest ...) precedence left inner-expression)))]
-                 [else (error 'parser "don't know how to parse ~a" #'head)])])])])))
 
+(define (parse input)
   (emit-remark "Honu parse" input)
   (define-values (parsed unparsed)
                  (do-parse input 0 (lambda (x) x) #f))
-  (values parsed
-          unparsed))
+  (values parsed unparsed))
 
 (define (empty-syntax? what)
   (syntax-parse what
