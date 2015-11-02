@@ -9,7 +9,8 @@
                      racket/base))
 
 (provide xml
-         xml->string)
+         xml->string
+         (rename-out [xml->string xml_to_string]))
 
 (struct xml:object (tag elements))
 
