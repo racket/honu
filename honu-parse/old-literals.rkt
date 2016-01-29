@@ -1,7 +1,10 @@
 #lang racket/base
 
 (provide (all-defined-out))
-(require "def-forms.rkt" syntax/parse)
+(require "define.rkt" syntax/parse)
+
+
+
 (define-literal honu-comma
                 #%braces #%brackets #%parens %colon
                 %semicolon
@@ -12,4 +15,6 @@
                 postfix)
 
 (define-literal-set cruft (#%parens #%brackets #%braces
-                           %semicolon %colon honu-comma))
+                                    %semicolon %colon honu-comma))
+
+(define-literal-set base-cruft (%colon honu-comma))

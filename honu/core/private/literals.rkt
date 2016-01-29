@@ -1,7 +1,7 @@
 #lang racket/base
-(require enforest enforest/literals)
+(require honu-parse honu-parse/literals)
 (provide (all-defined-out)
-         (all-from-out enforest/literals))
+         (all-from-out honu-parse/literals))
 
 (define-literal honu-|| honu-%
                 honu-%=

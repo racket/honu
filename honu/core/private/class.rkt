@@ -2,7 +2,7 @@
 
 (require (for-syntax racket/base
                      syntax/parse
-                     enforest
+                     honu-parse
                      "literals.rkt"
                      "util.rkt")
          racket/class
@@ -12,7 +12,7 @@
          "literals.rkt"
          (only-in "operator.rkt"
                   honu-equal)
-         enforest)
+         honu-parse)
 
 (begin-for-syntax
   (define (replace-with-public method)

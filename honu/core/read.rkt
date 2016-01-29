@@ -10,7 +10,7 @@
          (for-syntax racket/base
                      syntax/parse))
 
-(require enforest/debug)
+(require honu-parse/debug)
 
 (define-tokens honu-tokens (number identifier string))
 

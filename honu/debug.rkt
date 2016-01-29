@@ -5,7 +5,7 @@
          racket/cmdline)
 
 ;; Helpful debug things for Honu
-;;  * read a Honu program and view its structure as an s-expression (before enforestation)
+;;  * read a Honu program and view its structure as an s-expression (before parsing)
 
 (define (read-file file)
   (printf "Read file ~a\n" file)

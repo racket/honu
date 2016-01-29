@@ -4,10 +4,10 @@
                      scheme/base
                      syntax/define
                      syntax/parse
-                     enforest)
+                     honu-parse)
          (for-meta 2 racket/base)
          (for-meta 3 racket/base)
-         enforest)
+         honu-parse)
 
 (provide (all-defined-out))
 

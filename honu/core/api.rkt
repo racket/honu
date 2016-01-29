@@ -2,8 +2,8 @@
 
 ;; Public API for interfacing with the honu macro system
 
-(require enforest
-         (for-syntax enforest))
+(require honu-parse
+         (for-syntax honu-parse))
 (provide define-honu-syntax
          define-literal
          (for-syntax racket-syntax

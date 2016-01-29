@@ -1,10 +1,10 @@
 #lang racket/base
 
-(require enforest
+(require honu-parse
          racket/list
          racket/match
          (for-syntax racket/base
-                     enforest
+                     honu-parse
                      syntax/parse))
 
 (define-literal+set linq-literals

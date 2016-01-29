@@ -1,7 +1,6 @@
 #lang racket/base
-(require (for-syntax racket/base))
-
-(require "./main.rkt")
+(require (for-syntax racket/base)
+         "operator.rkt")
 
 (define-unary+binary-operator add 1 'left +)
 (define-unary+binary-operator sub 1 'left -)
