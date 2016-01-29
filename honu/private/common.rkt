@@ -1,9 +1,9 @@
 #lang racket/base
 
-(require enforest
+(require honu-parse
          (for-syntax syntax/parse
                      racket/base
-                     enforest))
+                     honu-parse))
 
 (provide sqr)
 (define (sqr x) (* x x))

@@ -4,7 +4,9 @@
 
 (require (for-syntax racket/base
                      syntax/define)
-         "def-forms.rkt")
+;         "def-forms.rkt"
+         "macro.rkt"
+         "operator.rkt")
 
 ;; Do any honu-specific expansion here
 (require (for-syntax

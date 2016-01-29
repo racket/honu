@@ -10,12 +10,12 @@
                        "private/macro.rkt"
                        "private/class.rkt"
                        "private/operator.rkt"
-                       enforest/syntax
+                       honu-parse/syntax
                        (prefix-in literal: "private/literals.rkt")
-                       (prefix-in literal: enforest/literals)
+                       (prefix-in literal: honu-parse/literals)
                        (prefix-in syntax-parse: syntax/parse)
                        (prefix-in racket: racket/base)
-                       (prefix-in parse: enforest/parse)
+                       (prefix-in parse: honu-parse/parse)
                        "private/honu.rkt"))
     (provide (for-meta meta-level 
                        (rename-out [parse:honu-expression expression]

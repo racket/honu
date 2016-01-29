@@ -6,11 +6,13 @@
                      racket/syntax
                      macro-debugger/emit
                      "literals.rkt"
-                     enforest/literals
-                     enforest/def-forms                 
-                     enforest/syntax
-                     enforest/debug
-                     (prefix-in phase1: enforest/compile)
+                     honu-parse/literals
+                     ;honu-parse/def-forms
+                     honu-parse/macro
+                     honu-parse/operator
+                     honu-parse/syntax
+                     honu-parse/debug
+                     (prefix-in phase1: honu-parse/compile)
                      racket/base)
          (for-meta 2 syntax/parse
                      racket/base
@@ -18,27 +20,29 @@
                      racket/syntax
                      racket/set
                      racket/pretty
-                     enforest/literals
-                     enforest/debug
+                     honu-parse/literals
+                     honu-parse/debug
                      "literals.rkt"
                      
-                     (prefix-in phase2: enforest/parse))
-         (prefix-in phase0: enforest/compile)
+                     (prefix-in phase2: honu-parse/parse))
+         (prefix-in phase0: honu-parse/compile)
          racket/splicing
-         enforest/literals
+         honu-parse/literals
          "literals.rkt"
-         enforest/syntax
-         enforest/def-forms         
-         enforest/debug
+         honu-parse/syntax
+         ;honu-parse/def-forms
+         honu-parse/macro
+         honu-parse/operator
+         honu-parse/debug
 
-         (for-meta 0 enforest/template syntax/stx)
+         (for-meta 0 honu-parse/template syntax/stx)
          syntax/parse)
 
 (module analysis racket/base
   (require syntax/parse
-           enforest/literals
+           honu-parse/literals
            "literals.rkt"
-           enforest/debug
+           honu-parse/debug
            "util.rkt"
            (prefix-in syntax: syntax/parse/private/residual-ct)
            racket/syntax

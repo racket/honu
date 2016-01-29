@@ -6,13 +6,13 @@
                      syntax/parse
                      syntax/parse/experimental/reflect
                      syntax/parse/experimental/splicing
-                     enforest
+                     honu-parse
                      "literals.rkt"
                      "util.rkt")
          (for-meta 2 macro-debugger/emit
                      racket/base
                      syntax/parse
-                     enforest)
+                     honu-parse)
          racket/class
          racket/match
          racket/require
@@ -23,7 +23,7 @@
                   honu-rename)
          "operator.rkt"
          "struct.rkt"
-         enforest)
+         honu-parse)
 
 (provide (all-from-out "struct.rkt"))
 

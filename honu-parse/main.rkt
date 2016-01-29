@@ -4,7 +4,9 @@
          "debug.rkt"
          "compile.rkt"
          "literals.rkt"
-         "def-forms.rkt"
+         "define.rkt"
+         "macro.rkt"
+         "operator.rkt"
          "parse.rkt"
          "unparsed-begin.rkt")
 
@@ -13,7 +15,9 @@
           "syntax.rkt"
           "debug.rkt"
           "compile.rkt"
-          "def-forms.rkt"
+          "define.rkt"
+          "macro.rkt"
+          "operator.rkt"
           "literals.rkt"
           "parse.rkt"
           "unparsed-begin.rkt"))
