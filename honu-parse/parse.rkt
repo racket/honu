@@ -75,7 +75,7 @@
                [rest arguments])
       (if (empty-syntax? rest)
         (reverse used)
-        (syntax-parse rest   #:literals (honu-comma)
+        (syntax-parse rest   #:datum-literals (honu-comma)
           [(honu-comma more ...)
            (loop used #'(more ...))]
           [else
