@@ -44,7 +44,8 @@
            "literals.rkt"
            honu-parse/debug
            "util.rkt"
-           (prefix-in syntax: syntax/parse/private/residual-ct)
+           #;
+           (prefix-in syntax: (submod syntax/parse/private/residual ct))
            racket/syntax
            racket/set
            racket/match
@@ -156,6 +157,9 @@
            (pattern-variable-class variable)
            (syntax-local-value (pattern-variable-class variable) (lambda () #f))
            (syntax-local-phase-level))
+    ;; inlined(!) from `syntax-parse` internals:
+    (define-struct syntax:stxclass (name arity attrs parser splicing? opts inline) #:prefab)
+    (define-struct syntax:attr (name depth syntax?) #:prefab)
     (define attributes
       (let ([syntax-class (syntax-local-value (pattern-variable-class variable))])
         (for/list ([attribute (syntax:stxclass-attrs syntax-class)])
@@ -323,7 +327,8 @@
 (require (for-syntax (submod "." analysis)))
 (require (for-meta 2 "util.rkt"
                    racket/match
-                   (prefix-in syntax: syntax/parse/private/residual-ct))
+                   #;
+                   (prefix-in syntax: (submod syntax/parse/private/residual ct)))
          (for-meta 3 racket/base syntax/parse racket/syntax)
          )
 ;; creates a new syntax/parse pattern
